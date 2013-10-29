@@ -1,0 +1,6 @@
+dist/
+*.swp
+*.hi
+*.o
+*.a
+*.so
