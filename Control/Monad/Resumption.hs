@@ -13,7 +13,7 @@ runResT (ResT m)  = do
                       x <- m
                       case x of 
                         Left val -> return val
-                        Right m -> runResT m
+                        Right m  -> runResT m
 
 instance Monad m => Monad (ResT m) where
   return x = ResT $ return $ Left x
@@ -40,3 +40,9 @@ instance Monad m => Applicative (ResT m) where
                               
 instance MonadIO m => MonadIO (ResT m) where
   liftIO = lift . liftIO
+
+step :: Monad m => m a -> ResT m a
+step m = ResT (return (Right (lift m)))
+
+tick :: Monad m => ResT m ()
+tick = step (return ())
