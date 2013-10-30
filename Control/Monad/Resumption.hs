@@ -1,3 +1,6 @@
+-- | A resumption monad transformer, based on the formulation in the article
+-- <http://people.cs.missouri.edu/~harrisonwl/drafts/CheapThreads.pdf Cheap (But Functional) Threads>
+-- by William L. Harrison and Adam Procter.
 module Control.Monad.Resumption where
 
 import Control.Monad
@@ -5,9 +8,11 @@ import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
 
-
+-- | Resumption monad transformer.
 newtype ResT m a = ResT { deResT :: m (Either a (ResT m a)) }
 
+-- | Runs a resumptive computation to exhaustion, producing its final return
+-- value.
 runResT :: (Monad m) => ResT m a -> m a
 runResT (ResT m)  = do
                       x <- m
@@ -41,8 +46,14 @@ instance Monad m => Applicative (ResT m) where
 instance MonadIO m => MonadIO (ResT m) where
   liftIO = lift . liftIO
 
+-- | Waits until the next tick, then executes the base-monad action.
+--
+-- Note that @step@ has the same type as @lift@, but it differs from @lift@
+-- in that @lift m@ does not induce a wait until the next tick, while
+-- @step m@ does.
 step :: Monad m => m a -> ResT m a
 step m = ResT (return (Right (lift m)))
 
+-- | Waits until the next tick. This is equivalent to @step (return ())@.
 tick :: Monad m => ResT m ()
 tick = step (return ())
