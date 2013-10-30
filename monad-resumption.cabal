@@ -4,7 +4,7 @@
 name:                monad-resumption
 version:             0.1.0.0
 synopsis:            Resumption and reactive resumption monads for Haskell.
--- description:         
+description:         Resumption and reactive-resumption monads for Haskell.
 homepage:            https://github.com/igraves/resumption_monads
 license:             BSD3
 license-file:        LICENSE
