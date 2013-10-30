@@ -4,7 +4,7 @@ import Control.Monad
 import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
-
+import Control.Monad.Resumption
 
 newtype ReacT input output m a = 
         ReacT { deReacT :: m (Either a (output, input -> ReacT input output m a)) }
@@ -37,3 +37,14 @@ stepRe o k = ReacT (return (Right (o,\ i -> lift (k i))))
 
 signal :: Monad m => output -> ReacT input output m input
 signal o = ReacT (return (Right (o,return)))
+
+-- | Tennis operator.
+(<~>) :: Monad m => ReacT i o m a -> ReacT o i m a -> ResT m a
+m1 <~> m2 = do r1 <- lift (deReacT m1)
+               case r1 of
+                 Left v        -> return v
+                 Right (o1,k1) -> do
+                   r2 <- lift (deReacT m2)
+                   case r2 of
+                     Left v        -> return v
+                     Right (o2,k2) -> k1 o2 <~> k2 o1
