@@ -39,12 +39,12 @@ signal :: Monad m => output -> ReacT input output m input
 signal o = ReacT (return (Right (o,return)))
 
 -- | Tennis operator.
-(<~>) :: Monad m => ReacT i o m a -> ReacT o i m a -> ResT m a
+(<~>) :: Monad m => ReacT i o m a -> ReacT o i m b -> ResT m (Either a b)
 m1 <~> m2 = do r1 <- lift (deReacT m1)
                case r1 of
-                 Left v        -> return v
+                 Left v        -> return (Left v)
                  Right (o1,k1) -> do
                    r2 <- lift (deReacT m2)
                    case r2 of
-                     Left v        -> return v
+                     Left v        -> return (Right v)
                      Right (o2,k2) -> k1 o2 <~> k2 o1
