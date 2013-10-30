@@ -46,14 +46,6 @@ instance Monad m => Applicative (ResT m) where
 instance MonadIO m => MonadIO (ResT m) where
   liftIO = lift . liftIO
 
--- | Waits until the next tick, then executes the base-monad action.
---
--- Note that @step@ has the same type as @lift@, but it differs from @lift@
--- in that @lift m@ does not induce a wait until the next tick, while
--- @step m@ does.
-step :: Monad m => m a -> ResT m a
-step m = ResT (return (Right (lift m)))
-
--- | Waits until the next tick. This is equivalent to @step (return ())@.
+-- | Waits until the next tick.
 tick :: Monad m => ResT m ()
-tick = step (return ())
+tick = ResT (return (Right (return ())))

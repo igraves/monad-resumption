@@ -1,3 +1,6 @@
+-- | A reactive resumption monad transforemer, based on the formulation in
+-- the article <http://people.cs.missouri.edu/~harrisonwl/drafts/CheapThreads.pdf Cheap (But Functional) Threads>
+-- by William L. Harrison and Adam Procter.
 module Control.Monad.Resumption.Reactive where
 
 import Control.Monad
@@ -6,6 +9,7 @@ import Control.Applicative
 import Control.Monad.IO.Class
 import Control.Monad.Resumption
 
+-- | Reactive resumption monad transformer.
 newtype ReacT input output m a = 
         ReacT { deReacT :: m (Either a (output, input -> ReacT input output m a)) }
 
@@ -32,9 +36,7 @@ instance Monad m => Applicative (ReacT input output m) where
 instance MonadIO m => MonadIO (ReacT input output m) where
   liftIO = lift . liftIO
 
-stepRe :: Monad m => output -> (input -> m a) -> ReacT input output m a
-stepRe o k = ReacT (return (Right (o,\ i -> lift (k i))))
-
+-- | Outputs its argument, then waits for the next input and returns it.
 signal :: Monad m => output -> ReacT input output m input
 signal o = ReacT (return (Right (o,return)))
 
