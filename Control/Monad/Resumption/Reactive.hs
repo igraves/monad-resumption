@@ -1,4 +1,4 @@
--- | A reactive resumption monad transforemer, based on the formulation in
+-- | A reactive resumption monad transformer, based on the formulation in
 -- the article <http://people.cs.missouri.edu/~harrisonwl/drafts/CheapThreads.pdf Cheap (But Functional) Threads>
 -- by William L. Harrison and Adam Procter.
 module Control.Monad.Resumption.Reactive where
