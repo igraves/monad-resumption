@@ -8,8 +8,8 @@ synopsis:            Resumption and reactive resumption monads for Haskell.
 homepage:            https://github.com/igraves/resumption_monads
 license:             BSD3
 license-file:        LICENSE
-author:              Ian Graves
-maintainer:          thegravian@gmail.com
+author:              Ian Graves, Adam Procter
+maintainer:          Ian Graves <thegravian@gmail.com>
 -- copyright:           
 category:            Control
 build-type:          Simple
