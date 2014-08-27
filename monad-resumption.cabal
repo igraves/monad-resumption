@@ -2,9 +2,9 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                monad-resumption
-version:             0.1.0.1
+version:             0.1.1.0
 synopsis:            Resumption and reactive resumption monads for Haskell.
-description:         Resumption and reactive-resumption monads for Haskell.
+description:         This package contains the definitions of Resumption and Reactive Resumption Monads.  
 homepage:            https://github.com/igraves/resumption_monads
 license:             BSD3
 license-file:        LICENSE
@@ -15,6 +15,9 @@ category:            Control
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
+source-repository head
+  type: git
+  location: https://github.com/igraves/monad-resumption.git
 
 library
    exposed-modules:     

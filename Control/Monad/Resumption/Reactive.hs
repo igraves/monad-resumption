@@ -1,4 +1,4 @@
--- | A reactive resumption monad transforemer, based on the formulation in
+-- | A reactive resumption monad transformer, based on the formulation in
 -- the article <http://people.cs.missouri.edu/~harrisonwl/drafts/CheapThreads.pdf Cheap (But Functional) Threads>
 -- by William L. Harrison and Adam Procter.
 module Control.Monad.Resumption.Reactive where
@@ -50,3 +50,13 @@ m1 <~> m2 = do r1 <- lift (deReacT m1)
                    case r2 of
                      Left v        -> return (Right v)
                      Right (o2,k2) -> k1 o2 <~> k2 o1
+
+-- | A basic runner function.  Provide the ReacT and a handler in the underlying monad to run.
+runReacT :: Monad m => ReacT input output m a -> (output -> m input) -> m a
+runReacT (ReacT r) handler = do
+                        inner <- r
+                        case inner of
+                          Left a -> return a
+                          Right (output,fr) -> do
+                                                  next_input <- handler output
+                                                  runReacT (fr next_input) handler
