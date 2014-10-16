@@ -1,3 +1,4 @@
+{-#LANGUAGE BangPatterns #-}
 -- | A reactive resumption monad transformer, based on the formulation in
 -- the article <http://people.cs.missouri.edu/~harrisonwl/drafts/CheapThreads.pdf Cheap (But Functional) Threads>
 -- by William L. Harrison and Adam Procter.
@@ -57,6 +58,6 @@ runReacT (ReacT r) handler = do
                         inner <- r
                         case inner of
                           Left a -> return a
-                          Right (output,fr) -> do
+                          Right (!output,!fr) -> do
                                                   next_input <- handler output
                                                   runReacT (fr next_input) handler
