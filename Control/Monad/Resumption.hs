@@ -7,6 +7,7 @@ import Control.Monad
 import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
+import Control.Monad.Morph
 
 -- | Resumption monad transformer.
 newtype ResT m a = ResT { deResT :: m (Either a (ResT m a)) }
@@ -45,6 +46,9 @@ instance Monad m => Applicative (ResT m) where
                               
 instance MonadIO m => MonadIO (ResT m) where
   liftIO = lift . liftIO
+
+instance MFunctor ResT where
+  hoist f = ResT . f . liftM (fmap (hoist f)) . deResT
 
 -- | Waits until the next tick.
 tick :: Monad m => ResT m ()
