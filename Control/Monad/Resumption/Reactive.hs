@@ -8,6 +8,7 @@ import Control.Monad
 import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
+import Control.Monad.Morph
 import Control.Monad.Resumption
 
 -- | Reactive resumption monad transformer.
@@ -36,6 +37,9 @@ instance Monad m => Applicative (ReacT input output m) where
 
 instance MonadIO m => MonadIO (ReacT input output m) where
   liftIO = lift . liftIO
+
+instance MFunctor (ReacT i o) where
+  hoist f = ReacT . f . liftM (fmap (fmap (fmap (hoist f)))) . deReacT
 
 -- | Outputs its argument, then waits for the next input and returns it.
 signal :: Monad m => output -> ReacT input output m input
