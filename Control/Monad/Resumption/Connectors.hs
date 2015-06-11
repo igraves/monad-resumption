@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Control.Monad.Resumption.Connectors where
 
 import Control.Monad.Resumption.Reactive
@@ -13,6 +14,22 @@ import Control.Monad.Resumption.Reactive
                                           (Left a,_)                        -> return $ Left a
                                           (_,Left a)                        -> return $ Left a
                                           (Right (o1,res1),Right (o2,res2)) -> return $ Right ((o1,o2),\(i1,i2) -> (res1 i1) <||> (res2 i2))
+
+{- Draft implementation of refoldT -}
+refoldT :: forall o1 o2 i1 i2 m a . Monad m => (o1 -> o2)
+                                               -> (o1 -> i2 -> Maybe i1)
+                                               -> ReacT i1 o1 m a
+                                               -> ReacT i2 o2 m a
+refoldT fo fi re = ReacT $ do
+                             p <- deReacT re
+                             case p of
+                                Left a           -> return $ Left a
+                                Right (o,resume) -> return $ Right (fo o, dispatch o resume)
+    where
+      dispatch :: o1 -> (i1 -> ReacT i1 o1 m a) -> (i2 -> ReacT i2 o2 m a)
+      dispatch o1 resume = \i2 -> case fi o1 i2 of
+                                        Nothing -> ReacT $ return $ Right (fo o1, dispatch o1 resume)
+                                        Just x  -> refoldT fo fi (resume x)
 
 -- | The refold operator changes the output and input types of a reactive resumption
 refold :: (Monad m) => (o1 -> o2) -> (o1 -> i2 -> i1) -> ReacT i1 o1 m a -> ReacT i2 o2 m a
