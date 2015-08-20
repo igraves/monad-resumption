@@ -5,7 +5,6 @@
 module Control.Monad.Resumption.Reactive where
 
 import Control.Monad
-import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
 import Control.Monad.Morph
@@ -41,6 +40,8 @@ instance MonadIO m => MonadIO (ReacT input output m) where
 instance MFunctor (ReacT i o) where
   hoist f = ReacT . f . liftM (fmap (fmap (fmap (hoist f)))) . deReacT
 
+
+
 -- | Outputs its argument, then waits for the next input and returns it.
 signal :: Monad m => output -> ReacT input output m input
 signal o = ReacT (return (Right (o,return)))
@@ -65,3 +66,13 @@ runReacT (ReacT r) handler = do
                           Right (!output,!fr) -> do
                                                   next_input <- handler output
                                                   runReacT (fr next_input) handler
+-- | A function for lifting pure functions to Reactive Resumptions.  Initial output is provided
+-- as the second argument.
+iter :: Monad m => (i -> o) -> o -> ReacT i o m a
+iter f init_o = do
+                  i <- signal init_o
+                  iter' f i
+  where
+    iter' f i = do
+                  i' <- signal (f i)
+                  iter' f i'

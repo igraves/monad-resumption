@@ -4,10 +4,10 @@
 module Control.Monad.Resumption where
 
 import Control.Monad
-import Control.Monad.Trans
+--import Control.Monad.Trans
 import Control.Applicative
 import Control.Monad.IO.Class
-import Control.Monad.Morph
+import Control.Monad.Morph 
 
 -- | Resumption monad transformer.
 newtype ResT m a = ResT { deResT :: m (Either a (ResT m a)) }
