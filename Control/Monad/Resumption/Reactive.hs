@@ -7,7 +7,8 @@ module Control.Monad.Resumption.Reactive where
 import Control.Monad
 import Control.Applicative
 import Control.Monad.IO.Class
-import Control.Monad.Morph
+import qualified Control.Monad.Morph as Morph
+import qualified Control.Monad.Trans as Trans
 import Control.Monad.Resumption
 
 -- | Reactive resumption monad transformer.
@@ -22,8 +23,11 @@ instance Monad m => Monad (ReacT input output m) where
                                     Left v                 -> deReacT (f v)
                                     Right (output, resume) -> return (Right (output,\ p -> resume p >>= f))
 
-instance MonadTrans (ReacT input output) where
+instance Trans.MonadTrans (ReacT input output) where
   lift m = ReacT $ m >>= return . Left
+
+--instance Morph.MonadTrans (ReacT input output) where
+--  lift m = ReacT $ m >>= return . Left
 
 instance Monad m => Functor (ReacT input output m) where
   fmap f (ReacT m) = ReacT (m >>= \ r -> case r of
@@ -35,10 +39,10 @@ instance Monad m => Applicative (ReacT input output m) where
   (<*>) = ap
 
 instance MonadIO m => MonadIO (ReacT input output m) where
-  liftIO = lift . liftIO
+  liftIO = Trans.lift . liftIO
 
-instance MFunctor (ReacT i o) where
-  hoist f = ReacT . f . liftM (fmap (fmap (fmap (hoist f)))) . deReacT
+instance Morph.MFunctor (ReacT i o) where
+  hoist f = ReacT . f . liftM (fmap (fmap (fmap (Morph.hoist f)))) . deReacT
 
 
 
@@ -48,11 +52,11 @@ signal o = ReacT (return (Right (o,return)))
 
 -- | Tennis operator.
 (<~>) :: Monad m => ReacT i o m a -> ReacT o i m b -> ResT m (Either a b)
-m1 <~> m2 = do r1 <- lift (deReacT m1)
+m1 <~> m2 = do r1 <- Trans.lift (deReacT m1)
                case r1 of
                  Left v        -> return (Left v)
                  Right (o1,k1) -> do
-                   r2 <- lift (deReacT m2)
+                   r2 <- Trans.lift (deReacT m2)
                    case r2 of
                      Left v        -> return (Right v)
                      Right (o2,k2) -> k1 o2 <~> k2 o1
