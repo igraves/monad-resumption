@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                monad-resumption
-version:             0.1.2.0
+version:             0.1.3.0
 synopsis:            Resumption and reactive resumption monads for Haskell.
 description:         This package contains the definitions of Resumption and Reactive Resumption Monads.  
 homepage:            https://github.com/igraves/resumption_monads
@@ -26,6 +26,6 @@ library
     Control.Monad.Resumption.Connectors
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.6 && <= 4.9, transformers, mtl, mmorph
+  build-depends:       base >=4.6, transformers, mtl, mmorph
   -- hs-source-dirs:      
   default-language:    Haskell2010
