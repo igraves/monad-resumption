@@ -1,0 +1,26 @@
+name:                monad-resumption
+version:             0.1.4.0
+license:             BSD3
+build-type:          Simple
+author:              Ian Graves, Adam Procter
+maintainer:          Ian Graves <thegravian@gmail.com>
+copyright:           2019 Ian Graves
+category:            Control
+extra-source-files:  README.md
+github:              igraves/monad-resumption
+
+synopsis:            Resumption and reactive resumption monads for Haskell.
+description:         This package contains the definitions of Resumption and Reactive Resumption Monads.  
+
+dependencies:
+- base >= 4.6 && < 5
+
+library:
+  exposed-modules:     
+  - Control.Monad.Resumption
+  - Control.Monad.Resumption.Reactive
+  - Control.Monad.Resumption.Connectors
+  dependencies:
+  - transformers
+  - mtl
+  - mmorph
