@@ -1,7 +1,7 @@
 language: haskell
 ghc:
-  - 8.2 
+  - 8.6.5 
 script:
-  - cabal configure --enable-tests && cabal build && cabal test
+  - stack build && stack test
 notifications:
   email: true
