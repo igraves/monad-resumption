@@ -4,3 +4,5 @@ dist/
 *.o
 *.a
 *.so
+.stack-work
+stack.yaml.lock
