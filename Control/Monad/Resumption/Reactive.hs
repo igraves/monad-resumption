@@ -16,7 +16,6 @@ newtype ReacT input output m a =
         ReacT { deReacT :: m (Either a (output, input -> ReacT input output m a)) }
 
 instance Monad m => Monad (ReacT input output m) where
-  return = ReacT . return . Left
   ReacT comp >>= f = ReacT $ do
                                 inner <- comp
                                 case inner of
@@ -35,7 +34,7 @@ instance Monad m => Functor (ReacT input output m) where
                                            Right (o,k) -> return (Right (o,\ i -> fmap f (k i))))
 
 instance Monad m => Applicative (ReacT input output m) where
-  pure  = return
+  pure = ReacT . return . Left
   (<*>) = ap
 
 instance MonadIO m => MonadIO (ReacT input output m) where
