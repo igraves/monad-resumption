@@ -22,7 +22,6 @@ runResT (ResT m)  = do
                         Right m  -> runResT m
 
 instance Monad m => Monad (ResT m) where
-  return x = ResT $ return $ Left x
   ResT m >>= f =  ResT $ do 
                           x <- m 
                           case x of
@@ -41,7 +40,7 @@ instance Monad m => Functor (ResT m) where
                                 Right res -> return $ Right $ res >>= return . f
 
 instance Monad m => Applicative (ResT m) where
-  pure = return
+  pure x = ResT $ return $ Left x
   (<*>) = ap
                               
 instance MonadIO m => MonadIO (ResT m) where
